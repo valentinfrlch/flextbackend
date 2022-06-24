@@ -38,6 +38,11 @@ def main():
     with open("index.csv", "r") as csvfile:
         reader = csv.reader(csvfile)
         i = 0
+        with open("enhanced.csv", "a") as enhanced:
+            writer = csv.writer(enhanced)
+            writer.writerow(["name", "id", "type", "path",
+                            "release_date", "genres", "description", "runtime", "poster", "backdrop"])
+            enhanced.close()
         for row in reader:
             # write in enhanced.csv
             with open("enhanced.csv", "a") as enhanced:
