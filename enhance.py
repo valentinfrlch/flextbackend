@@ -3,40 +3,46 @@ import os
 import requests
 
 
-def enhance():
-    # get the apikey from API
-    with open("API", "r+") as keyfile:
-        api_key = keyfile.read()
-    # open the file "index.csv" in "home/scripts/flextbackend"
+def enhance(row):
+    api_key = open("API", "r").read()
+    id = row[1]
+    url = "https://api.themoviedb.org/3/movie/" + \
+        id + "?api_key="+api_key+"&language=de-DE"
+    # get the response
+    try:
+        response = requests.get(url)
+        # get the json data
+        data = response.json()
+        release_date = data["release_date"]
+        row.append(release_date)
+        # get the genres from the json data
+        genres = []
+        for genre in data["genres"]:
+            genres.append(genre["name"])
+        row.append(genres)
+        description = data["overview"]
+        row.append(description)
+        runtime = data["runtime"]
+        row.append(runtime)
+        # get the images from the json data
+        poster = data["poster_path"]
+        backdrop = data["backdrop_path"]
+        row.append(poster)
+        row.append(backdrop)
+
+    except Exception as e:
+        print(e)
+    return row
+
+
+def main():
     with open("index.csv", "r") as csvfile:
         reader = csv.reader(csvfile)
-        # for every row in the csv file make a request to the themoviedb.org API
+        i = 0
         for row in reader:
-            # get the id of the file
-            id = row[1]
-            #make a request to the themoviedb.org API
-            url = "https://api.themoviedb.org/3/movie/" + \
-                id + "?api_key="+api_key+"&language=de-DE"
-            # get the response
-            try:
-                response = requests.get(url)
-                # get the json data
-                data = response.json()
-                release_date = data["release_date"]
-                row.append(release_date)
-                # get the genres from the json data
-                genres = []
-                for genre in data["genres"]:
-                    genres.append(genre["name"])
-                row.append(genres)
-                description = data["overview"]
-                row.append(description)
-                runtime = data["runtime"]
-                row.append(runtime)
-                print(genres)
-            except Exception as e:
-                print(e)
-                continue
-
-
-enhance()
+            # write in enhanced.csv
+            with open("enhanced.csv", "a") as enhanced:
+                writer = csv.writer(enhanced)
+                writer.writerow(enhance(row))
+            i += 1
+            print(str(i) + " movies enhanced")
