@@ -56,5 +56,3 @@ def index(path):
 def main():
     index("/media/pi/F01/Flext/Filme")
 
-
-main()
