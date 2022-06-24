@@ -46,3 +46,6 @@ def main():
                 writer.writerow(enhance(row))
             i += 1
             print(str(i) + " movies enhanced")
+
+
+main()
